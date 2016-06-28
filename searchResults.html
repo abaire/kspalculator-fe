@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+{% block body %}
+<div id="searchResults">
+    {% if not results %}
+    No results found.
+    {% else %}
+    <ul>
+        {% for result in results %}
+        <li>
+            {{ result.name }}
+            <table>
+                <tr>
+                    <td>
+                        Total mass: {{ result.mass }} kg (including payload and full tanks)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Cost: {{ result.cost }}
+                    </td>
+                </tr>
+                {% if result.liquid_fuel %}
+                <tr>
+                    <td>
+                        Liquid fuel: {{ result.liquid_fuel_units}} units
+                        ({{ result.liquid_fuel }} kg full tank mass)
+                    </td>
+                </tr>
+                {% endif %}
+                {% if result.special_fuel %}
+                <tr>
+                    <td>
+                        {{ result.special_fuel_type }}: {{ result.special_fuel_units }} units
+                        ({{ result.special_fuel }} kg full tank mass)
+                    </td>
+                </tr>
+                {% endif %}
+
+                <tr>
+                    <td>
+                        Requires: {{ result.required }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Radial size: {{ result.radial_size }}
+                    </td>
+                </tr>
+                {% if result.gimbal != 0.0 %}
+                <tr>
+                    <td>
+                        Gimbal: {{ '%.1f' % result.gimbal }}°
+                    </td>
+                </tr>
+                {% endif %}
+                {% if result.electricity %}
+                <tr>
+                    <td>
+                        Generates electricity
+                    </td>
+                </tr>
+                {% endif %}
+                {% if result.min_strut_required %}
+                <tr>
+                    <td>
+                        Engine is short enough to be used with {{ result.min_strut_required }}
+                    </td>
+                </tr>
+                {% endif %}
+                {% if result.notes_list %}
+                <tr>
+                    <td>
+                        Notes:
+                    </td>
+                    {% for note in result.notes_list %}
+                    <td>{{ note }}</td>
+                    {% endfor %}
+                </tr>
+                {% endif %}
+
+                <tr>
+                    <td>
+                        Performance:
+                    </td>
+                    <td>
+                        <table>
+                            {% for phase in result.per_stage_performance %}
+                            <tr>
+                                <td>
+                                    {% if phase.solid_booster %}*{% endif %}{{ loop.index }}:
+                                </td>
+                                <td>
+                                    {{ '%.2f' % phase.delta_v }} m/s @
+                                    {% if phase.pressure > 0.0 %}
+                                    {{ '%.2f' % phase.pressure }} atm
+                                    {% else %}
+                                    vacuum
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ '%5.2f' % phase.acc_start }} m/s² - {{ '%5.2f' %
+                                    phase.acc_end }} m/s²
+                                </td>
+                                <td>
+                                    {{ '%5.1f' % phase.mass_start }} tons - {{ '%5.1f' %
+                                    phase.mass_end }} tons
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endblock %}

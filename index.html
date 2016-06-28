@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A simple frontend for kspalculator">
+    <title>Kspalculator frontend</title>
+    <link type="text/css" rel="stylesheet" href="/bootstrap/css/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.css">
+    <link type="text/css" rel="stylesheet" href="/css/kspalculator-fe.css">
+</head>
+<body>
+<div class="container">
+    <form id="parameters">
+
+        Payload (in kilograms)
+        <input id="payload" name="payload" type="number" value="0"/>
+
+        <legend>Preferences:</legend>
+
+        <table>
+            <tr>
+                <td>Radius</td>
+                <td>
+                    <select name="preferred-radius">
+                        <option value="">Any</option>
+                        <option value="tiny">0.625 meter</option>
+                        <option value="small">1.25 meter</option>
+                        <option value="large">2.5 meter</option>
+                        <option value="extralarge">3.75 meter</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="checkbox" name="preferences" value="boosters"/>
+                    Include solid boosters
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="checkbox" name="preferences" value="electricity"/>
+                    Generates electricity
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="checkbox" name="preferences" value="length"/>
+                    Supports short landing gear
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Thrust vectoring requirements
+                </td>
+                <td>
+                    <select name="gimbal">
+                        <option value="0">None</option>
+                        <option value="1">Prefer any vectoring</option>
+                        <option value="2">Prefer better vectoring angles</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Order results by
+                </td>
+                <td>
+                    <select name="ordering">
+                        <option value="weight">Weight</option>
+                        <option value="cost">Cost</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <table id="flightPhases">
+            <caption>Flight phases</caption>
+            <tbody>
+                <tr>
+                    <th>Δ velocity (m/s)</th>
+                    <th>Acceleration (m/s^2)</th>
+                    <th>Pressure (% ATM)</th>
+                </tr>
+                <tr>
+                    <td><input type="number" name="delta-v" step="0.1" value="0"/></td>
+                    <td><input type="number" name="acceleration" step="0.01" value="0"/></td>
+                    <td><input type="number" name="pressure" value="0"/></td>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <button type="button"
+                    id="addPhase"
+                    class="btn btn-small"
+                    autocomplete="off">
+                Add a raw ΔV phase
+            </button>
+
+            <button type="button"
+                    class="btn btn-small"
+                    data-toggle="modal"
+                    data-target="#addDestinationModal">
+                Add a named destination phase
+            </button>
+
+            <button type="button"
+                    id="removePhase"
+                    class="btn btn-small"
+                    autocomplete="off">
+                Remove last phase
+            </button>
+        </div>
+        <br/>
+        <div>
+            <button type="button"
+                    id="submitButton"
+                    data-loading-text="Searching..."
+                    class="btn btn-large btn-primary"
+                    autocomplete="off">
+                Search
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade"
+     id="addDestinationModal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="addDestinationModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">New transfer phase</h4>
+            </div>
+            <div class="modal-body">
+                <form id="transferParameters">
+                    <table>
+                        <tr>
+                            <td>
+                                From
+                                <select name="start_body">
+                                    {% for body in body_options %}
+                                    <option value="{{ body }}">{{ body }}</option>
+                                    {% endfor %}
+                                </select>
+                                <select name="start_location">
+                                    {% for location in location_options %}
+                                    <option value="{{ location }}">{{ location }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                To
+                                <select name="end_body">
+                                    {% for body in body_options %}
+                                    <option value="{{ body }}">{{ body }}</option>
+                                    {% endfor %}
+                                </select>
+                                <select name="end_location">
+                                    {% for location in location_options %}
+                                    <option value="{{ location }}">{{ location }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="addTransferStages"
+                        type="button"
+                        class="btn btn-primary"
+                        data-dismiss="modal">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="searchResults"></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="/bootstrap/js/bootstrap.js" lang="text/javascript"></script>
+<script src="/js/kspalculator-fe.js" lang="text/javascript"></script>
+
+</body>
+</html>
+{% endautoescape %}
